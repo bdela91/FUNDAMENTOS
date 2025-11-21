@@ -1,0 +1,74 @@
+public class Calculadora
+{
+    
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("CALCULADORA");
+        double num1 = 0;
+        double num2 = 0;
+
+        Console.Write("Introduce el primer numero:");
+        num1 = double.Parse(Console.ReadLine());
+
+        
+        while (num1 < 0)
+        {
+            Console.Write("Tiene que ser positivo. Intentalo de nuevo: ");
+            num1 = double.Parse(Console.ReadLine());
+        }
+
+        Console.Write("Introduce el segundo numero:");
+            num2 = double.Parse(Console.ReadLine());
+
+        while (num2 < 0)
+        {
+            Console.Write("Tiene que ser positivo. Intentalo de nuevo:  ");
+            num2 = double.Parse(Console.ReadLine());
+        }
+
+
+        
+
+        string opcion = "opciones";
+        
+        while (opcion != "5")
+        {
+            Console.WriteLine("MENU:");
+            Console.WriteLine("1.Suma");
+            Console.WriteLine("2.Resta");
+            Console.WriteLine("3.Multiplicacion");
+            Console.WriteLine("4.Division");
+            Console.WriteLine("5.Salir");
+            Console.Write("Elige una operacion: ");
+
+
+            opcion = Console.ReadLine();
+
+
+            if (opcion == "1")
+            {
+                Console.WriteLine("Resultado: "+(num1 + num2));
+            }
+            else if (opcion == "2")
+            {
+                Console.WriteLine("Resultado: "+(num1 - num2));
+            }
+            else if (opcion == "3")
+            {
+                Console.WriteLine("Resultado:"+(num1 * num2));
+            }
+            else if (opcion == "4")
+            {  
+                 Console.WriteLine("Resultado: " + (num1 / num2));
+            }
+            else if (opcion == "5")
+            {
+                Console.WriteLine("SALIR");
+            }
+            else
+            {
+                Console.WriteLine("Opción no válida.");
+            }
+        }
+    }
+}
