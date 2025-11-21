@@ -67,7 +67,7 @@ public class Calculadora
             }
             else
             {
-                Console.WriteLine("Opción no válida.");
+                Console.WriteLine("Opcion no valida");
             }
         }
     }
