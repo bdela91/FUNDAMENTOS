@@ -1,0 +1,163 @@
+class Program
+{
+    static List<Usuario> usuarios = new List<Usuario>();
+    static Usuario usuarioActual;
+
+    static void Main()
+    {
+        int opcion;
+
+        do
+        {
+            Console.WriteLine("\n--- MENÚ PRINCIPAL ---");
+            Console.WriteLine("1. Registrar usuario");
+            Console.WriteLine("2. Iniciar sesión");
+            Console.WriteLine("0. Salir");
+            Console.Write("Opción: ");
+            opcion = int.Parse(Console.ReadLine());
+
+            switch (opcion)
+            {
+                case 1:
+                    RegistrarUsuario();
+                    break;
+                case 2:
+                    Login();
+                    break;
+            }
+
+        } while (opcion != 0);
+    }
+
+    static void RegistrarUsuario()
+    {
+        Console.Write("Correo: ");
+        string correo = Console.ReadLine();
+
+        foreach (Usuario u in usuarios)
+        {
+            if (u.Correo == correo)
+            {
+                Console.WriteLine("Ese usuario ya existe.");
+                return;
+            }
+        }
+
+        Console.Write("Contraseña: ");
+        string password = Console.ReadLine();
+
+        usuarios.Add(new Usuario(correo, password));
+        Console.WriteLine("Usuario registrado correctamente.");
+    }
+
+    static void Login()
+    {
+        Console.Write("Correo: ");
+        string correo = Console.ReadLine();
+
+        Console.Write("Contraseña: ");
+        string password = Console.ReadLine();
+
+        foreach (Usuario u in usuarios)
+        {
+            if (u.Correo == correo && u.Password == password)
+            {
+                usuarioActual = u;
+                Console.WriteLine("Sesión iniciada.");
+                MenuUsuario();
+                return;
+            }
+        }
+
+        Console.WriteLine("Correo o contraseña incorrectos.");
+    }
+
+    static void MenuUsuario()
+    {
+        int opcion;
+
+        do
+        {
+            Console.WriteLine("\n--- MENU DE USUARIO ---");
+            Console.WriteLine("1. Registrar entrenamiento");
+            Console.WriteLine("2. Lista entrenamientos");
+            Console.WriteLine("3. Vaciar entrenamientos");
+            Console.WriteLine("0. Cerrar sesión");
+            Console.Write("Opción: ");
+            opcion = int.Parse(Console.ReadLine());
+
+            switch (opcion)
+            {
+                case 1:
+                    RegistrarEntrenamiento();
+                    break;
+                case 2:
+                    ListaEntrenamientos();
+                    break;
+                case 3:
+                    VaciarEntrenamientos();
+                    break;
+            }
+
+        } while (opcion != 0);
+
+        usuarioActual = null;
+        Console.WriteLine("Sesión cerrada.");
+    }
+
+    static void RegistrarEntrenamiento()
+    {
+        Console.Write("Distancia(km): ");
+        double distancia = double.Parse(Console.ReadLine());
+
+        Console.Write("Tiempo(min): ");
+        double tiempo = double.Parse(Console.ReadLine());
+
+        usuarioActual.Entrenamientos.Add(new Entrenamiento(distancia, tiempo));
+        Console.WriteLine("Entrenamiento guardado.");
+    }
+
+    static void ListaEntrenamientos()
+    {
+        if (usuarioActual.Entrenamientos.Count == 0)
+        {
+            Console.WriteLine("No hay entrenamientos.");
+            return;
+        }
+
+        foreach (Entrenamiento e in usuarioActual.Entrenamientos)
+        {
+            Console.WriteLine($"Distancia: {e.Distancia} km - Tiempo: {e.Tiempo} min");
+        }
+    }
+
+    static void VaciarEntrenamientos()
+    {
+        usuarioActual.Entrenamientos.Clear();
+        Console.WriteLine("Entrenamientos eliminados.");
+    }
+}
+class Usuario
+{
+    public string Correo;
+    public string Password;
+    public List<Entrenamiento> Entrenamientos;
+
+    public Usuario(string correo, string password)
+    {
+        Correo = correo;
+        Password = password;
+        Entrenamientos = new List<Entrenamiento>();
+    }
+}
+class Entrenamiento
+{
+    public double Distancia;
+    public double Tiempo;
+
+    public Entrenamiento(double distancia, double tiempo)
+    {
+        Distancia = distancia;
+        Tiempo = tiempo;
+    }
+}
