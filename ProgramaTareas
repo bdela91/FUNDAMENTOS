@@ -1,0 +1,219 @@
+namespace GestionTareas
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            GestorTareas Gestor = new GestorTareas();       
+
+            string opcion = "";
+            while (opcion != "0")
+            {
+                Console.WriteLine("--- MENÚ DE TAREAS ---");
+                Console.WriteLine("1. Crear Tarea");
+                Console.WriteLine("2. Buscar por Tipo");
+                Console.WriteLine("3. Eliminar Tarea");
+                Console.WriteLine("4. Mostrar Todas");
+                Console.WriteLine("5. Exportar a TXT");
+                Console.WriteLine("6. Importar de TXT");
+                Console.WriteLine("0. Salir");
+                Console.Write("Elige una opción: ");
+                opcion = Console.ReadLine();
+
+                if (opcion == "1")
+                {
+                    Console.Write("Nombre: ");
+                    string nom = Console.ReadLine();
+                    Console.Write("Descripción: ");
+                    string desc = Console.ReadLine();
+                    Console.Write("Tipo (0:Personal, 1:Trabajo, 2:Ocio): ");
+                    int tipoInt = int.Parse(Console.ReadLine());
+                    TipoTarea tipoEnum = (TipoTarea)tipoInt;
+                    Console.Write("¿Prioritaria? (s/n): ");
+                    bool prio = Console.ReadLine().ToLower() == "s";
+
+                    Gestor.AgregarNuevaTarea(nom, desc, tipoEnum, prio);
+                }
+                else if (opcion == "2")
+                {
+                    Console.Write("¿Qué tipo buscas? (0:Persona, 1:Trabajo, 2:Ocio): ");
+                    int tBusca = int.Parse(Console.ReadLine());
+                    Gestor.BuscarPorTipo((TipoTarea)tBusca);
+                }
+                else if (opcion == "3")
+                {
+                    Console.Write("ID de la tarea a borrar: ");
+                    int idBorrar = int.Parse(Console.ReadLine());
+                    Gestor.EliminarTareaPorId(idBorrar);
+                }
+                else if (opcion == "4")
+                {
+                  
+                    if (Gestor.listaTareas.Count <= 0)
+                    {
+                        Console.WriteLine("La lista de tareas está vacía.");
+                    }
+                         else
+                    {
+                            
+                            foreach (Tarea t in Gestor.listaTareas)
+                            {
+                                 t.MostrarInformacion();
+                            }
+                    }
+                }
+                else if (opcion == "5")
+                {
+                    Gestor.ExportarFichero();
+                    Console.WriteLine("Archivo guardado.");
+                }
+                else if (opcion == "6")
+                {
+                    Gestor.ImportarFichero();
+                    Console.WriteLine("Archivo cargado.");
+                }
+            }
+        }
+    }
+}  
+
+namespace GestionTareas
+{
+    public class GestorTareas
+    {
+        
+        public List<Tarea> listaTareas = new List<Tarea>();
+        
+        private int contadorId = 1;
+    
+        public void AgregarNuevaTarea(string nombre, string desc, TipoTarea tipo, bool prioridad)
+        {
+            Tarea nueva = new Tarea();
+            nueva.Id = contadorId;
+            nueva.Nombre = nombre;
+            nueva.Descripcion = desc;
+            nueva.Tipo = tipo;
+            nueva.EsPrioritaria = prioridad;
+
+            listaTareas.Add(nueva);
+            
+            contadorId = contadorId + 1;
+        }
+
+        public void BuscarPorTipo(TipoTarea tipoABuscar)
+        {
+            bool encontrada = false;
+            foreach (Tarea t in listaTareas)
+            {
+                if (t.Tipo == tipoABuscar)
+                {
+                    t.MostrarInformacion();
+                    encontrada = true;
+                }
+            }
+
+            if (encontrada == false)
+            {
+                Console.WriteLine("No se encontraron tareas de tipo: " + tipoABuscar);
+            }
+        }
+
+        public void EliminarTareaPorId(int idABuscar)
+        {
+            Tarea tareaAEliminar = null;
+
+            foreach (Tarea t in listaTareas)
+            {
+                if (t.Id == idABuscar)
+                {
+                    tareaAEliminar = t;
+                }
+            }
+
+            if (tareaAEliminar != null)
+            {
+                listaTareas.Remove(tareaAEliminar);
+                Console.WriteLine("Tarea eliminada correctamente.");
+            }
+            else
+            {
+                Console.WriteLine("No existe ninguna tarea con el ID: " + idABuscar);
+            }
+        }
+
+        public void ExportarFichero()
+        {
+            StreamWriter escritor = new StreamWriter("tareas.txt");
+            foreach (Tarea t in listaTareas)
+            {
+                escritor.WriteLine(t.Id + ";" + t.Nombre + ";" + t.Descripcion + ";" + t.Tipo + ";" + t.EsPrioritaria);
+            }
+            escritor.Close();
+        }
+
+        public void ImportarFichero()
+        {
+            if (File.Exists("tareas.txt"))
+            {
+                listaTareas.Clear();
+                StreamReader lector = new StreamReader("tareas.txt");
+                string linea;
+
+                while ((linea = lector.ReadLine()) != null)
+                {
+                    string[] trozos = linea.Split(';');
+                    
+                    Tarea t = new Tarea();
+                    t.Id = int.Parse(trozos[0]);
+                    t.Nombre = trozos[1];
+                    t.Descripcion = trozos[2];
+                    t.Tipo = (TipoTarea)Enum.Parse(typeof(TipoTarea), trozos[3]);
+                    t.EsPrioritaria = bool.Parse(trozos[4]);
+
+                    listaTareas.Add(t);
+
+                    if (t.Id >= contadorId)
+                    {
+                        contadorId = t.Id + 1;
+                    }
+                }
+                lector.Close();
+            }
+        }
+    }
+}
+
+namespace GestionTareas
+{
+    public class Tarea
+    {
+   
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string Descripcion { get; set; }
+        public TipoTarea Tipo { get; set; }
+        public bool EsPrioritaria { get; set; }
+
+        public void MostrarInformacion()
+        {
+            
+
+            Console.WriteLine("ID: " + Id);
+            Console.WriteLine("Nombre: " + Nombre);
+            Console.WriteLine("Descripción: " + Descripcion);
+            Console.WriteLine("Tipo: " + Tipo);
+            Console.WriteLine("Prioritaria: " + EsPrioritaria);
+            Console.WriteLine(" ****** ");
+        }
+    }
+}
+
+namespace GestionTareas
+{
+    public enum TipoTarea
+    {
+        Persona,
+        Trabajo,
+        Ocio
+    }
+}
